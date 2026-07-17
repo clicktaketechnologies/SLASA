@@ -10,10 +10,14 @@ This repository houses the full-stack web application of Slasa Academy, built us
 
 ### 🌟 Public Website
 *   **Intuitive Course Navigator**: Dynamic courses database filtering by age groups, level, or subject.
-*   **Active Staff & Tutors Gallery**: Get to know the dedicated tutors and academic heads behind our students' success.
+*   **Interactive Tuition Calculator**: Instant quote generation based on educational key stages and selected study subjects.
+*   **Active Tutors & Staff Gallery**: Get to know the dedicated tutors and academic heads behind our students' success.
 *   **Visual Student Gallery**: Showcasing student achievements, art, classroom moments, and academic progress.
-*   **Pricing & Registration System**: Transparant fee structure and an integrated online registration/lead submission form.
-*   **News & Retakes Section**: Up-to-date information on GCSE retakes, course registration dates, and academy updates.
+*   **Pricing & Registration System**: Transparent fee structure and an integrated online registration/lead submission form.
+*   **GCSE Retakes Portal**: Dedicated guidance and streamlined sign-ups for revision courses and exam retakes.
+*   **Direct WhatsApp Chat Integration**: One-click floating support button connecting parents directly with academy coordinators.
+*   **Interactive Venue Finder**: Detailed Nottingham center location information, venue features, and contact details.
+*   **News & Academy Updates**: Up-to-date information on GCSE retakes, course registration dates, and academy updates.
 
 ### 🔐 Interactive User Portals (Role-Based Dashboards)
 *   **Admin Dashboard**:
@@ -28,6 +32,30 @@ This repository houses the full-stack web application of Slasa Academy, built us
     *   Submit homework/assignments and track grading feedback.
 *   **Parent Portal**:
     *   Track children's progress, teacher feedback, and course status.
+
+---
+
+## 🗝️ Admin Portal & Access Credentials
+
+To access the administrative dashboard, CMS settings, or student portals, navigate to the **Login Portal**:
+*   **Login Page Link**: [Slasa Academy Login Portal](https://ais-pre-o2mvvxjw22god2d5ototxi-56455435001.asia-east1.run.app/login)
+*   **Subsequent Admin Path**: `/admin` (accessible automatically once authorized as an administrative role).
+
+### 🔑 Authentication Details
+
+You can log in and manage the application using either of the following two methods:
+
+#### Method A: Demo Admin Account (Seeded Instantly)
+This is the recommended approach for quick testing and overview of administrative operations.
+*   **Email**: `admin@example.com`
+*   **Password**: `password123`
+*   **Role Assigned**: `super_admin`
+*   **How to Activate**: Simply head to the [Login page](https://ais-pre-o2mvvxjw22god2d5ototxi-56455435001.asia-east1.run.app/login) and click the **"Seed Demo Admin Account"** button. This instantly provisions and registers the default administrator profile in your Firebase Auth and Firestore database.
+
+#### Method B: Google Authentication (Self-Promotion)
+*   **Admin Email**: `clicktaketechnologies@gmail.com`
+*   **Role Assigned**: `super_admin`
+*   **How to Activate**: Go to the login page and click **"Google Account"** to sign in. The application automatically detects this specific email address and grants full `super_admin` credentials to your session on the first sign-in.
 
 ---
 
