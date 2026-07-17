@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&family=Poppins:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00247D; /* UK Royal Blue */
+  --color-primary-light: #0056b3; /* Lighter Blue */
+  --color-secondary: #E62739; /* UK Red */
+  --color-brand-red: #E62739; /* Brand Red */
+  --color-brand-orange: #FF8C00; /* Brand Orange */
+  --color-brand-yellow: #FFD700; /* Brand Yellow */
+  --color-accent-yellow: #FFD700;
+  --color-accent-purple: #00247D;
+  --font-heading: "Poppins", "Montserrat", sans-serif;
+  --font-body: "Open Sans", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-body text-slate-900 bg-white;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full border-2 border-slate-100 hover:bg-slate-400 transition-colors;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better Focus States */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary/50;
+}
+
+.glass-card {
+  @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-sm;
+}
+
+.btn-primary {
+  @apply bg-secondary text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all duration-300 shadow-lg shadow-secondary/20 hover:shadow-xl active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-primary text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-xl active:scale-95;
+}
+
+.btn-outline {
+  @apply border-2 border-primary text-primary px-8 py-4 rounded-2xl font-bold hover:bg-primary hover:text-white transition-all duration-300 active:scale-95;
+}
+
+.btn-orange {
+  @apply bg-brand-orange text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all duration-300 shadow-lg shadow-brand-orange/20 hover:shadow-xl active:scale-95;
+}
+
+.btn-red {
+  @apply bg-brand-red text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all duration-300 shadow-lg shadow-brand-red/20 hover:shadow-xl active:scale-95;
+}
+
+.btn-yellow {
+  @apply bg-brand-yellow text-slate-900 px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all duration-300 shadow-lg shadow-brand-yellow/20 hover:shadow-xl active:scale-95;
+}
+

@@ -1,0 +1,7 @@
+{
+  "name": "Slasa Academy",
+  "description": "Slasa Academy in Nottingham offering KS1 to GCSE tuition, 11+ prep, and Urdu classes.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

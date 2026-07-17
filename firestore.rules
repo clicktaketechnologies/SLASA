@@ -1,0 +1,225 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {uid}
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - displayName: string
+    //   - role: string (required, enum: ['super_admin', 'admin', 'staff', 'teacher', 'student', 'parent'])
+    //   - createdAt: timestamp
+    //
+    // Collection: pages
+    // Document ID: {slug}
+    // Fields:
+    //   - slug: string (required)
+    //   - title: string (required)
+    //   - content: string
+    //   - seo: map (title, description, keywords)
+    //
+    // Collection: lessons
+    // Document ID: {lessonId}
+    // Fields:
+    //   - title: string (required)
+    //   - subject: string (required)
+    //   - content: string
+    //   - teacherId: string (required)
+    //   - courseId: string (required)
+    //
+    // Collection: feedback
+    // Document ID: {feedbackId}
+    // Fields:
+    //   - studentId: string (required)
+    //   - teacherId: string (required)
+    //   - content: string (required)
+    //
+    // Collection: leads
+    // Document ID: {leadId}
+    // Fields:
+    //   - name: string (required)
+    //   - email: string (required)
+    //   - status: string (required)
+    //
+    // Collection: staff
+    // Document ID: {staffId}
+    // Fields:
+    //   - name: string (required)
+    //   - role: string (required)
+    //   - bio: string (required)
+    //   - image: string (required)
+    //   - order: int
+    //
+    // Collection: gallery
+    // Document ID: {galleryId}
+    // Fields:
+    //   - url: string (required)
+    //   - title: string (required)
+    //   - category: string
+    //   - createdAt: timestamp
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      let isDefaultAdmin = isAuthenticated() && 
+                           request.auth.token.email == "clicktaketechnologies@gmail.com" && 
+                           request.auth.token.email_verified == true;
+      let hasAdminRole = isAuthenticated() && 
+                         exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+                         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['super_admin', 'admin'];
+      return isDefaultAdmin || hasAdminRole;
+    }
+
+    function isTeacher() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+
+    function isStaff() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff';
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid is string &&
+             data.email is string &&
+             data.role in ['super_admin', 'admin', 'staff', 'teacher', 'student', 'parent'];
+    }
+
+    function isValidPage(data) {
+      return data.keys().hasAll(['slug', 'title']) &&
+             data.slug is string &&
+             data.title is string;
+    }
+
+    function isValidLesson(data) {
+      return data.keys().hasAll(['title', 'subject', 'teacherId', 'courseId']) &&
+             data.title is string &&
+             data.subject in ['Maths', 'English', 'Science'] &&
+             data.teacherId is string &&
+             data.courseId is string;
+    }
+
+    function isValidFeedback(data) {
+      return data.keys().hasAll(['studentId', 'teacherId', 'content']) &&
+             data.studentId is string &&
+             data.teacherId is string &&
+             data.content is string;
+    }
+
+    function isValidLead(data) {
+      return data.keys().hasAll(['name', 'email', 'status']) &&
+             data.name is string &&
+             data.email is string &&
+             data.status in ['new', 'contacted', 'enrolled', 'lost'];
+    }
+
+    function isValidSubmission(data) {
+      return data.keys().hasAll(['studentId', 'lessonId', 'status']) &&
+             data.studentId is string &&
+             data.lessonId is string &&
+             data.status in ['submitted', 'graded', 'resubmit'];
+    }
+
+    function isValidStaff(data) {
+      return data.keys().hasAll(['name', 'role', 'bio', 'image']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.role is string && data.role.size() > 0 && data.role.size() < 100 &&
+             data.bio is string && data.bio.size() > 0 && data.bio.size() < 2000 &&
+             data.image is string && (data.image.matches("^https://.*") || data.image.matches("^http://.*")) &&
+             (!('order' in data) || data.order is int);
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll(['url', 'title']) &&
+             data.url is string && data.url.size() > 0 && data.url.size() < 1000 &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             (!('category' in data) || (data.category is string && data.category.size() < 100)) &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin() || isStaff());
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
+      allow delete: if isAdmin();
+    }
+
+    match /pages/{slug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /lessons/{lessonId} {
+      allow read: if isAuthenticated();
+      allow create: if isTeacher() && isValidLesson(request.resource.data) && request.resource.data.teacherId == request.auth.uid;
+      allow update: if (isTeacher() && isValidLesson(request.resource.data) && resource.data.teacherId == request.auth.uid) || isAdmin();
+      allow delete: if (isTeacher() && resource.data.teacherId == request.auth.uid) || isAdmin();
+    }
+
+    match /feedback/{feedbackId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.studentId || request.auth.uid == resource.data.teacherId || isAdmin());
+      allow create: if isTeacher() && isValidFeedback(request.resource.data) && request.resource.data.teacherId == request.auth.uid;
+      allow update: if (isTeacher() && isValidFeedback(request.resource.data) && resource.data.teacherId == request.auth.uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /leads/{leadId} {
+      allow read: if isAdmin() || isStaff();
+      allow create: if true; // Anyone can submit a lead
+      allow update, delete: if isAdmin() || isStaff();
+    }
+
+    match /courses/{courseId} {
+      allow read: if true; // Courses are public
+      allow write: if isAdmin();
+    }
+
+    match /submissions/{submissionId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.studentId || isAdmin() || isTeacher());
+      allow create: if isAuthenticated() && isValidSubmission(request.resource.data) && request.resource.data.studentId == request.auth.uid;
+      allow update: if (isAuthenticated() && isValidSubmission(request.resource.data) && (resource.data.studentId == request.auth.uid || isAdmin() || isTeacher()));
+      allow delete: if isAdmin();
+    }
+
+    match /staff/{staffId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidStaff(request.resource.data);
+      allow update: if isAdmin() && isValidStaff(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /gallery/{galleryId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidGalleryItem(request.resource.data);
+      allow update: if isAdmin() && isValidGalleryItem(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

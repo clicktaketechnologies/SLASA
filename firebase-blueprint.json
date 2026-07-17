@@ -1,0 +1,157 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user information and roles.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "admin", "staff", "teacher", "student", "parent"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "studentIds": { "type": "array", "items": { "type": "string" }, "description": "For parents, list of student UIDs" },
+        "parentId": { "type": "string", "description": "For students, UID of the parent" },
+        "subjects": { "type": "array", "items": { "type": "string" }, "description": "For teachers, list of subjects they teach" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "PageContent": {
+      "title": "Page Content",
+      "description": "Dynamic content for website pages.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "seo": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "description": { "type": "string" },
+            "keywords": { "type": "string" }
+          }
+        },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slug", "title"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Weekly subject-based content.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subject": { "type": "string", "enum": ["Maths", "English", "Science"] },
+        "content": { "type": "string", "description": "Markdown or HTML content" },
+        "teacherId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "weekNumber": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "subject", "teacherId", "courseId"]
+    },
+    "Feedback": {
+      "title": "Feedback",
+      "description": "Teacher feedback for students.",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "lessonId": { "type": "string" },
+        "content": { "type": "string" },
+        "rating": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentId", "teacherId", "content"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Student assignment submissions and scores.",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "lessonId": { "type": "string" },
+        "content": { "type": "string" },
+        "score": { "type": "integer", "description": "Score out of 100" },
+        "status": { "type": "string", "enum": ["submitted", "graded", "resubmit"] },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "gradedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentId", "lessonId", "status"]
+    },
+    "Lead": {
+      "title": "Lead",
+      "description": "Lead management data.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "contacted", "enrolled", "lost"] },
+        "source": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "status"]
+    },
+    "StaffMember": {
+      "title": "Staff Member",
+      "description": "Information about teachers and staff members.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "bio": { "type": "string" },
+        "image": { "type": "string", "format": "uri" },
+        "order": { "type": "integer" }
+      },
+      "required": ["name", "role", "bio", "image"]
+    },
+    "GalleryItem": {
+      "title": "Gallery Item",
+      "description": "An item in the visual gallery.",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["url", "title"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profiles and roles."
+    },
+    "/pages/{slug}": {
+      "schema": "PageContent",
+      "description": "Dynamic page content."
+    },
+    "/lessons/{lessonId}": {
+      "schema": "Lesson",
+      "description": "Weekly lessons."
+    },
+    "/feedback/{feedbackId}": {
+      "schema": "Feedback",
+      "description": "Student feedback."
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "Student submissions."
+    },
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "Lead management."
+    },
+    "/staff/{staffId}": {
+      "schema": "StaffMember",
+      "description": "Staff and teacher gallery."
+    },
+    "/gallery/{galleryId}": {
+      "schema": "GalleryItem",
+      "description": "Visual gallery items."
+    }
+  }
+}
