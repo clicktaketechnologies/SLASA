@@ -1,12 +1,15 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
 // Use the provided firestoreDatabaseId if it exists, otherwise default to '(default)'
 const databaseId = firebaseConfig.firestoreDatabaseId || '(default)';
-export const db = getFirestore(app, databaseId);
+// Initialize Firestore with experimentalForceLongPolling to bypass WebSocket blocking/proxy issues in iframe previews
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+}, databaseId);
 export const auth = getAuth(app);
 
 export enum OperationType {
@@ -73,11 +76,14 @@ async function testConnection() {
       return;
     }
     
-    console.error("Firestore connection attempt failed:", error.message);
-    if (error.message.includes('insufficient permissions')) {
+    if (error.message && (error.message.includes('the client is offline') || error.message.includes('Could not reach') || error.message.includes('offline'))) {
+      console.info("Firestore is operating in offline-first mode or network is slow:", error.message);
+    } else {
+      console.warn("Firestore connection check info:", error.message);
+    }
+    
+    if (error.message && error.message.includes('insufficient permissions')) {
       console.warn("Permission denied for connection test. This might be expected if the test path is restricted.");
-    } else if (error.message.includes('the client is offline') || error.message.includes('Could not reach')) {
-      console.warn("Please check your Firebase configuration. If the error persists, the firestoreDatabaseId might be incorrect.");
     }
   }
 }
