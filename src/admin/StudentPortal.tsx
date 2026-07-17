@@ -40,26 +40,36 @@ const StudentPortal = () => {
       const lessonsSnapshot = await getDocs(lessonsQ);
       setLessons(lessonsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-      // Fetch Submissions
+      // Fetch Submissions (Query without orderBy to avoid composite index requirements, sort client-side)
       const submissionsQ = query(
         collection(db, 'submissions'), 
-        where('studentId', '==', uid),
-        orderBy('submittedAt', 'desc'),
-        limit(10)
+        where('studentId', '==', uid)
       );
       const submissionsSnapshot = await getDocs(submissionsQ);
-      const subData = submissionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const subData = submissionsSnapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a: any, b: any) => {
+          const timeA = a.submittedAt?.seconds || 0;
+          const timeB = b.submittedAt?.seconds || 0;
+          return timeB - timeA;
+        })
+        .slice(0, 10);
       setSubmissions(subData);
 
-      // Fetch Feedback
+      // Fetch Feedback (Query without orderBy to avoid composite index requirements, sort client-side)
       const feedbackQ = query(
         collection(db, 'feedback'), 
-        where('studentId', '==', uid),
-        orderBy('createdAt', 'desc'),
-        limit(5)
+        where('studentId', '==', uid)
       );
       const feedbackSnapshot = await getDocs(feedbackQ);
-      const fbData = feedbackSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const fbData = feedbackSnapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a: any, b: any) => {
+          const timeA = a.createdAt?.seconds || 0;
+          const timeB = b.createdAt?.seconds || 0;
+          return timeB - timeA;
+        })
+        .slice(0, 5);
       setFeedback(fbData);
 
     } catch (error) {

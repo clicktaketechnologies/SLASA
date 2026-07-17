@@ -37,6 +37,7 @@ const Registration = () => {
       data.firstName = formData.get('firstName');
       data.middleName = formData.get('middleName');
       data.lastName = formData.get('lastName');
+      data.name = [data.firstName, data.middleName, data.lastName].filter(Boolean).join(' ');
       data.dob = formData.get('dob');
       data.gender = formData.get('gender');
       data.address = formData.get('address');
@@ -47,27 +48,34 @@ const Registration = () => {
       data.class = formData.get('class');
       data.email = formData.get('email');
       data.mobileNo = formData.get('mobileNo');
+      data.phone = formData.get('mobileNo') || '';
       data.landlineNo = formData.get('landlineNo');
       data.courses = formData.get('courses');
       data.additionalInfo = formData.get('additionalInfo');
+      data.status = 'new';
+      data.source = 'Student Registration';
     } else {
       data.fullName = formData.get('fullName');
+      data.name = formData.get('fullName');
       data.email = formData.get('email');
       data.subjects = formData.getAll('subjects');
       data.levels = formData.getAll('levels');
       data.additionalInfo = formData.get('additionalInfo');
+      data.phone = '';
+      data.status = 'new';
+      data.source = 'Teacher Job Application';
       // CV upload would go here in a real app, for now we just mock the URL
       data.cvUrl = "mock-cv-url";
     }
 
     try {
-      await addDoc(collection(db, 'registrations'), data);
+      await addDoc(collection(db, 'leads'), data);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       console.error("Error submitting registration:", err);
       setError("Failed to submit registration. Please try again.");
-      handleFirestoreError(err, OperationType.WRITE, 'registrations');
+      handleFirestoreError(err, OperationType.WRITE, 'leads');
     } finally {
       setSubmitting(false);
     }

@@ -42,37 +42,43 @@ const Dashboard = () => {
 
       try {
         // Fetch user role
+        let role = null;
         const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
         if (userDoc.exists()) {
-          setUserRole(userDoc.data().role);
+          role = userDoc.data().role;
+          setUserRole(role);
         } else if (auth.currentUser.email === 'clicktaketechnologies@gmail.com') {
+          role = 'super_admin';
           setUserRole('super_admin');
         }
 
-        // Fetch stats
-        const [
-          studentsSnap,
-          activeLeadsSnap,
-          coursesSnap,
-          pendingFeedbackSnap,
-          recentLeadsSnap
-        ] = await Promise.all([
-          getDocs(query(collection(db, 'users'), where('role', '==', 'student'))),
-          getDocs(query(collection(db, 'leads'), where('status', 'in', ['new', 'contacted']))),
-          getDocs(collection(db, 'courses')),
-          getDocs(query(collection(db, 'submissions'), where('status', '==', 'submitted'))),
-          getDocs(query(collection(db, 'leads'), orderBy('createdAt', 'desc'), limit(5)))
-        ]);
+        // ONLY if the role is super_admin, admin, or staff, do we query admin collections
+        if (role && ['super_admin', 'admin', 'staff'].includes(role)) {
+          // Fetch stats
+          const [
+            studentsSnap,
+            activeLeadsSnap,
+            coursesSnap,
+            pendingFeedbackSnap,
+            recentLeadsSnap
+          ] = await Promise.all([
+            getDocs(query(collection(db, 'users'), where('role', '==', 'student'))),
+            getDocs(query(collection(db, 'leads'), where('status', 'in', ['new', 'contacted']))),
+            getDocs(collection(db, 'courses')),
+            getDocs(query(collection(db, 'submissions'), where('status', '==', 'submitted'))),
+            getDocs(query(collection(db, 'leads'), orderBy('createdAt', 'desc'), limit(5)))
+          ]);
 
-        const leads = recentLeadsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setRecentLeads(leads);
+          const leads = recentLeadsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setRecentLeads(leads);
 
-        setStats({
-          totalStudents: studentsSnap.size,
-          totalLeads: activeLeadsSnap.size,
-          activeCourses: coursesSnap.size,
-          pendingFeedback: pendingFeedbackSnap.size
-        });
+          setStats({
+            totalStudents: studentsSnap.size,
+            totalLeads: activeLeadsSnap.size,
+            activeCourses: coursesSnap.size,
+            pendingFeedback: pendingFeedbackSnap.size
+          });
+        }
       } catch (err: any) {
         console.error('Error fetching dashboard data:', err);
         setError(err.message);

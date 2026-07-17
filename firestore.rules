@@ -111,11 +111,17 @@ service cloud.firestore {
     }
 
     function isValidLesson(data) {
-      return data.keys().hasAll(['title', 'subject', 'teacherId', 'courseId']) &&
+      return data.keys().hasAll(['title', 'subject', 'teacherId']) &&
              data.title is string &&
-             data.subject in ['Maths', 'English', 'Science'] &&
              data.teacherId is string &&
-             data.courseId is string;
+             (!('courseId' in data) || data.courseId is string);
+    }
+
+    function isValidPublicFeedback(data) {
+      return data.keys().hasAll(['parentName', 'studentName', 'comments']) &&
+             data.parentName is string &&
+             data.studentName is string &&
+             data.comments is string;
     }
 
     function isValidFeedback(data) {
@@ -184,6 +190,11 @@ service cloud.firestore {
       allow create: if isTeacher() && isValidFeedback(request.resource.data) && request.resource.data.teacherId == request.auth.uid;
       allow update: if (isTeacher() && isValidFeedback(request.resource.data) && resource.data.teacherId == request.auth.uid) || isAdmin();
       allow delete: if isAdmin();
+    }
+
+    match /feedbacks/{feedbackId} {
+      allow read, create: if true;
+      allow update, delete: if isAdmin();
     }
 
     match /leads/{leadId} {

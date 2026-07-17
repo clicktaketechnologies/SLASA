@@ -30,11 +30,16 @@ const ParentPortal = () => {
     try {
       const q = query(
         collection(db, 'feedback'), 
-        where('parentId', '==', auth.currentUser?.uid),
-        orderBy('createdAt', 'desc')
+        where('parentId', '==', auth.currentUser?.uid)
       );
       const snapshot = await getDocs(q);
-      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const items = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a: any, b: any) => {
+          const timeA = a.createdAt?.seconds || 0;
+          const timeB = b.createdAt?.seconds || 0;
+          return timeB - timeA;
+        });
       setFeedback(items);
     } catch (error) {
       console.error('Error fetching feedback:', error);
