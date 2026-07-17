@@ -37,25 +37,32 @@ This repository houses the full-stack web application of Slasa Academy, built us
 
 ## 🗝️ Admin Portal & Access Credentials
 
-To access the administrative dashboard, CMS settings, or student portals, navigate to the **Login Portal**:
+To access the administrative dashboards, CMS settings, or student/parent/teacher portals, navigate to the **Login Portal**:
 *   **Login Page Link**: [Slasa Academy Login Portal](https://ais-pre-o2mvvxjw22god2d5ototxi-56455435001.asia-east1.run.app/login)
-*   **Subsequent Admin Path**: `/admin` (accessible automatically once authorized as an administrative role).
+*   **Integrated Sub-Dashboard Path**: `/admin` (handles adaptive views automatically based on your user profile's role).
 
 ### 🔑 Authentication Details
 
-You can log in and manage the application using either of the following two methods:
+You can access and verify any role inside the academy application using either of the following standard approaches:
 
-#### Method A: Demo Admin Account (Seeded Instantly)
-This is the recommended approach for quick testing and overview of administrative operations.
-*   **Email**: `admin@example.com`
-*   **Password**: `password123`
-*   **Role Assigned**: `super_admin`
-*   **How to Activate**: Simply head to the [Login page](https://ais-pre-o2mvvxjw22god2d5ototxi-56455435001.asia-east1.run.app/login) and click the **"Seed Demo Admin Account"** button. This instantly provisions and registers the default administrator profile in your Firebase Auth and Firestore database.
+#### Method A: Multi-Role Demo Accounts (Instantly Seeded)
+To facilitate rapid testing, verification, and evaluation of role-based portals, we have fully integrated automated, self-healing demo accounts. Click any of the **Quick Verify** cards on the login page to instantly provision, seed, and log in:
+1.  **Super Admin**: `admin@example.com` / `password123`
+2.  **Teacher Portal**: `teacher@example.com` / `password123`
+3.  **Student Portal**: `student@example.com` / `password123`
+4.  **Parent Portal**: `parent@example.com` / `password123`
 
-#### Method B: Google Authentication (Self-Promotion)
+#### Method B: Direct Owner Auto-Admin Bypass
 *   **Admin Email**: `clicktaketechnologies@gmail.com`
-*   **Role Assigned**: `super_admin`
-*   **How to Activate**: Go to the login page and click **"Google Account"** to sign in. The application automatically detects this specific email address and grants full `super_admin` credentials to your session on the first sign-in.
+*   **Assigned Role**: `super_admin`
+*   **How to Activate**: Click the **Owner Auto-Admin** button on the login screen, or sign in via **Google Account** using your admin email address. The application automatically registers you as a permanent `super_admin` in Firebase Auth and Firestore.
+
+#### Method C: Self-Registration (Other Users / Verification)
+Anyone can create a clean, independent account using the **Sign Up** tab:
+1.  Select **Sign Up** on the login portal.
+2.  Provide a **Full Name**, **Email Address**, and a secure **Password**.
+3.  Select your desired **Role** (Student, Parent, Teacher, or Staff).
+4.  Submit to instantly register your profile in Firebase Auth and Firestore. You will be redirected directly to your secure `/admin` workspace.
 
 ---
 
