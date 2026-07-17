@@ -68,7 +68,7 @@ Make sure you have Node.js (v18 or higher) installed on your system.
 
 ### 2. Clone the Repository
 ```bash
-git clone git@github.com:HAFIZFARHAN630/SLASA.git
+git clone https://github.com/clicktaketechnologies/SLASA.git
 cd SLASA
 ```
 
